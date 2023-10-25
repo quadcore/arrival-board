@@ -15,7 +15,7 @@ class StateVector:
 class OpenSkyApi:
 
     def __init__(self):
-        self.base_url = APP_CONFIG["opensky"]["api"]["base_url"]
+        self.base_url = APP_CONFIG["opensky"]["base_url"]
         self.username = APP_CONFIG["opensky"]["credentials"]["username"]
         self.password = APP_CONFIG["opensky"]["credentials"]["password"]
 

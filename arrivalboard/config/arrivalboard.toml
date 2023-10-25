@@ -1,2 +1,5 @@
-[api]
+[datasources]
+adsb = "opensky"
+
+[opensky]
 base_url = "https://opensky-network.org/api"
