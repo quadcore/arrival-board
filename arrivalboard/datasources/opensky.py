@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import json
 
 import requests
 from requests.auth import HTTPBasicAuth
