@@ -4,9 +4,11 @@ from typing import List
 import requests
 from requests.auth import HTTPBasicAuth
 
-from data.adsb import ADSBSource
 from config import APP_CONFIG
+from data.adsb import ADSBSource
+from helpers import latlon
 from models.aircraft import Aircraft
+from models.airport import Airport
 
 
 class OpenSkyApi(ADSBSource):
@@ -16,21 +18,20 @@ class OpenSkyApi(ADSBSource):
         self.username: str = APP_CONFIG["opensky"]["credentials"]["username"]
         self.password: str = APP_CONFIG["opensky"]["credentials"]["password"]
 
-    def get_aircraft(self,
-                     lat_min: float,
-                     lon_min: float,
-                     lat_max: float,
-                     lon_max: float) -> List[Aircraft]:
+    def get_aircraft(self, airport: Airport) -> List[Aircraft]:
+        area: latlon.BoundingSquare = \
+            latlon.get_bounding_square_from_point(airport.lat, airport.lon, 10)
+
         full_url = self.base_url + "/states/all"
 
         resp = requests.get(
             full_url,
             auth=HTTPBasicAuth(self.username, self.password),
             params={
-                "lamin": lat_min,
-                "lomin": lon_min,
-                "lamax": lat_max,
-                "lomax": lon_max, 
+                "lamin": area.lat_min,
+                "lomin": area.lon_min,
+                "lamax": area.lat_max,
+                "lomax": area.lon_max,
             })
         
         json_dict = resp.json()
@@ -41,14 +42,18 @@ class OpenSkyApi(ADSBSource):
         aircraft: List[Aircraft] = []
 
         for v in state_vectors:
-            cleaned_data = {
-                "callsign": v[1].strip(),
-                "baro_alt_ft": v[7] * 3.28084,
-                "ground_speed": v[9] * 1.94384,
-                "vert_rate_ftm": v[11] * 3.28084 * 60,
-            }
-            aircraft.append(
-                Aircraft(**cleaned_data)
-            )
+            # TODO: Handle this better
+            try:
+                cleaned_data = {
+                    "callsign": v[1].strip(),
+                    "baro_alt_ft": v[7] * 3.28084,
+                    "ground_speed": v[9] * 1.94384,
+                    "vert_rate_ftm": v[11] * 3.28084 * 60,
+                }
+                aircraft.append(
+                    Aircraft(**cleaned_data)
+                )
+            except:
+                pass
 
         return aircraft

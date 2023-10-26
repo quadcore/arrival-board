@@ -15,8 +15,6 @@ class Runway:
 class Airport:
     icao_code: str
     name: str
-    boundary_lat_min: float
-    boundary_lon_min: float
-    boundary_lat_max: float
-    boundary_lon_max: float
+    lat: float
+    lon: float
     runways: List[Runway]
