@@ -1,0 +1,15 @@
+icao_code = "KORD"
+name = "Chicago O'Hare International Airport"
+
+boundary_lat_min = 999
+boundary_lon_min = 999
+boundary_lat_max = 999
+boundary_lon_max = 999
+
+[runways]
+
+[runways.28C]
+final_lat_min = 41.96435457528524
+final_lon_min = -87.89027314349802
+final_lat_max = 41.9671407283871
+final_lon_max = -87.69732051942088
