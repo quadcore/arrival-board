@@ -6,17 +6,18 @@ APP_CONFIG = {}
 
 def init():
     _init_app()
-
-    if APP_CONFIG["datasources"]["adsb"] == "opensky":
-        _init_opensky()
-    else:
-        raise ValueError("No valid ADSB source specified.")
+    _init_airports()
 
 
 def _init_app():
     with open("config/arrivalboard.toml", "rb") as c:
         data = tomllib.load(c)
         APP_CONFIG.update(data)
+
+    if APP_CONFIG["datasources"]["adsb"] == "opensky":
+        _init_opensky()
+    else:
+        raise ValueError("No valid ADSB source specified.")
 
 
 def _init_opensky():
@@ -31,3 +32,9 @@ def _init_opensky():
             APP_CONFIG["opensky"].update(data)
     except FileNotFoundError:
         pass
+
+
+def _init_airports():
+    with open("config/airports/kord.toml", "rb") as c:
+        data = tomllib.load(c)
+        APP_CONFIG["airports"] = data

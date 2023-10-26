@@ -1,5 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import List
+
+from models.aircraft import Aircraft
 
 
 class ADSBSource(ABC):
@@ -9,5 +12,5 @@ class ADSBSource(ABC):
                      lat_min: float,
                      lon_min: float,
                      lat_max: float,
-                     lon_max: float):
+                     lon_max: float) -> List[Aircraft]:
         pass
