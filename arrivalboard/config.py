@@ -7,7 +7,12 @@ _config_path = ""
 
 
 def init_config(config_path: str, app_config_filename: str):
-    """Initialize the application config and fully populate the APP_CONFIG dict."""
+    """Initialize the application config and fully populate the APP_CONFIG dict.
+
+    Keyword arguments:
+    config_path -- the path of the folder that contains the configuration files
+    app_config_filename -- the name of the TOML file for the application config
+    """
     global _config_path
     _config_path = config_path
 
