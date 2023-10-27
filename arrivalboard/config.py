@@ -31,7 +31,7 @@ def _init_opensky():
     try:
         APP_CONFIG["opensky"]["base_url"]
     except KeyError:
-        raise ValueError("Invalid OpenSky configuration.")
+        raise ValueError("Missing OpenSky base url.")
 
     try:
         opensky_auth_filename = APP_CONFIG["opensky"]["auth_file"]
@@ -40,4 +40,6 @@ def _init_opensky():
             data = tomllib.load(c)
             APP_CONFIG["opensky"].update(data)
     except KeyError:
+        # If we can't find an auth_file setting, ignore configuring OpenSky
+        # authentication and default to non-authenticated requests.
         pass
