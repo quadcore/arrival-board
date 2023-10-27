@@ -1,12 +1,12 @@
 from config import APP_CONFIG
-from config import init as init_config
+from config import init_config
 from data.airport_toml import AirportTomlSource
 from data.opensky import OpenSkyApi
 from services.arrivals import ArrivalsService
 
 
 def run():
-    init_config()
+    init_config("config", "arrivalboard.toml")
     
     print(f"Running with application config:\n{APP_CONFIG}\n")
 

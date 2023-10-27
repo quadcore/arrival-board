@@ -2,5 +2,5 @@
 adsb = "opensky"
 
 [opensky]
-base_url = "https://opensky-network.org/api"
+base_url = "https://opensky/test"
 auth_file = "opensky_auth.toml"

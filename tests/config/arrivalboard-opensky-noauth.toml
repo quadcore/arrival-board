@@ -1,0 +1,5 @@
+[datasources]
+adsb = "opensky"
+
+[opensky]
+base_url = "https://opensky/test"
