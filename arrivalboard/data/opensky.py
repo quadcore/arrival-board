@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
-import requests
+from requests import Request
+from requests import Session
 from requests.auth import HTTPBasicAuth
 
 from config import APP_CONFIG
@@ -14,26 +15,40 @@ from models.airport import Airport
 class OpenSkyApi(ADSBSource):
 
     def __init__(self):
+        self.session = Session()
         self.base_url: str = APP_CONFIG["opensky"]["base_url"]
-        self.username: str = APP_CONFIG["opensky"]["credentials"]["username"]
-        self.password: str = APP_CONFIG["opensky"]["credentials"]["password"]
+
+        try:
+            self.username: str = APP_CONFIG["opensky"]["credentials"]["username"]
+            self.password: str = APP_CONFIG["opensky"]["credentials"]["password"]
+        except KeyError:
+            # Default to non-authenticated requests.
+            pass
 
     def get_aircraft(self, airport: Airport) -> List[Aircraft]:
+        """Get aircraft within range of the specified airport.
+
+        Keyword arguments:
+        airport -- the airport to get aircraft for
+        """
+        # OpenSky works based on a bounding box so we create a square of a
+        # specified size with its center being the airport's WGS84 coordinates.
         area: latlon.BoundingSquare = \
             latlon.get_bounding_square_from_point(airport.lat, airport.lon, 10)
 
-        full_url = self.base_url + "/states/all"
+        url = self.base_url + "/states/all"
+        params = {
+            "lamin": area.lat_min,
+            "lomin": area.lon_min,
+            "lamax": area.lat_max,
+            "lomax": area.lon_max,
+        }
 
-        resp = requests.get(
-            full_url,
-            auth=HTTPBasicAuth(self.username, self.password),
-            params={
-                "lamin": area.lat_min,
-                "lomin": area.lon_min,
-                "lamax": area.lat_max,
-                "lomax": area.lon_max,
-            })
-        
+        req = Request("GET", url, params=params)
+        if hasattr(self, "username") and hasattr(self, "password"):
+            req.auth = HTTPBasicAuth(self.username, self.password)
+
+        resp = self.session.send(req.prepare())
         json_dict = resp.json()
 
         return self._parse_state_vectors(json_dict["states"])
