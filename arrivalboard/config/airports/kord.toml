@@ -1,30 +1,12 @@
 icao_code = "KORD"
-name = "Chicago O'Hare Intl"
-lat = 41.977000
-lon = -87.908167
+name = "Chicago O'Hare International Airport"
+lat = 41.978611
+lon = -87.904724
 
 [runways]
 
-[runways.27L]
-threshold_lat = 41.983913
-threshold_lon = -87.890186
-
-[runways.27C]
-threshold_lat = 41.988318
-threshold_lon = -87.890235
-
-[runways.27R]
-threshold_lat = 42.002843
-threshold_lon = -87.899118
-
-[runways.28L]
-threshold_lat = 41.957244
-threshold_lon = -87.900322
-
 [runways.28C]
-threshold_lat = 41.965774
-threshold_lon = -87.891843
-
-[runways.28R]
-threshold_lat = 41.969080
-threshold_lon = -87.883762
+final_lat_min = 41.96435457528524
+final_lon_min = -87.89027314349802
+final_lat_max = 41.9671407283871
+final_lon_max = -87.69732051942088
