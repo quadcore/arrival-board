@@ -14,10 +14,9 @@ def run():
     airports = airport_source.get_airports()
 
     arrivals = ArrivalsService(OpenSkyApi())
-    aircraft = arrivals.get_aircraft(airports["KORD"])
+    aircraft = arrivals.get_aircraft_by_runway(airports["KORD"])
 
-    for a in aircraft:
-        print(a)
+    print(aircraft)
 
 
 if __name__ == "__main__":
