@@ -21,14 +21,13 @@ class AirportTomlSource(AirportSource):
         return airports
     
     def _parse_airport(self, airport_dict) -> Airport:
-        runways = []
+        runways = {}
         runway_dict = {}
 
         for r in airport_dict["runways"].items():
             runway_dict["number"] = r[0]
             runway_dict.update(r[1])
-
-        runways.append(Runway(**runway_dict))
+            runways[r[0]] = Runway(**runway_dict)
 
         airport_dict["runways"] = runways
 

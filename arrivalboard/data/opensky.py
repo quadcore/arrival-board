@@ -7,7 +7,7 @@ from requests.auth import HTTPBasicAuth
 
 from config import APP_CONFIG
 from data.adsb import ADSBSource
-from helpers import latlon
+import latlon
 from models.aircraft import Aircraft
 from models.airport import Airport
 
@@ -33,8 +33,8 @@ class OpenSkyApi(ADSBSource):
         """
         # OpenSky works based on a bounding box so we create a square of a
         # specified size with its center being the airport's WGS84 coordinates.
-        area: latlon.BoundingSquare = \
-            latlon.get_bounding_square_from_point(airport.lat, airport.lon, 10)
+        area: latlon.BoundingBox = \
+            latlon.get_bounding_square_from_point(airport.lat, airport.lon, 15)
 
         url = self.base_url + "/states/all"
         params = {
@@ -62,8 +62,11 @@ class OpenSkyApi(ADSBSource):
                 cleaned_data = {
                     "callsign": v[1].strip(),
                     "baro_alt_ft": v[7] * 3.28084,
-                    "ground_speed": v[9] * 1.94384,
                     "vert_rate_ftm": v[11] * 3.28084 * 60,
+                    "ground_speed": v[9] * 1.94384,
+                    "track": int(v[10]),
+                    "lat": round(v[6], 6),
+                    "lon": round(v[5], 6),
                 }
                 aircraft.append(
                     Aircraft(**cleaned_data)
