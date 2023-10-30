@@ -1,6 +1,5 @@
 import os
 import tomllib
-from typing import Dict
 
 from data.airport import AirportSource
 from models.airport import Airport
@@ -9,7 +8,7 @@ from models.airport import Runway
 
 class AirportTomlSource(AirportSource):
 
-    def get_airports(self) -> Dict[str, Airport]:
+    def get_airports(self) -> dict[str, Airport]:
         airports = {}
 
         for filename in os.listdir("config/airports"):
