@@ -16,7 +16,7 @@ class BoundingBox:
 
 def get_bounding_square_from_point(lat: float,
                                    lon: float,
-                                   radius_miles: int) -> BoundingBox:
+                                   radius_miles: float) -> BoundingBox:
     lat_min, lon_min = get_point_from_distance_and_bearing(lat, lon, radius_miles, 225)
     lat_max, lon_max = get_point_from_distance_and_bearing(lat, lon, radius_miles, 45)
 
@@ -24,8 +24,7 @@ def get_bounding_square_from_point(lat: float,
         lat_min=lat_min,
         lon_min=lon_min,
         lat_max=lat_max,
-        lon_max=lon_max,
-    )
+        lon_max=lon_max)
 
 
 def get_point_from_distance_and_bearing(lat: float,
@@ -40,7 +39,7 @@ def get_point_from_distance_and_bearing(lat: float,
     new_la = math.asin(math.sin(la) * math.cos(dist) + math.cos(la) * math.sin(dist) * math.cos(brng))
     new_lo = lo + math.atan2(math.sin(brng) * math.sin(dist) * math.cos(la), math.cos(dist) - math.sin(la) * math.sin(new_la))
 
-    return math.degrees(new_la), math.degrees(new_lo)
+    return round(math.degrees(new_la), 6), round(math.degrees(new_lo), 6)
 
 
 def get_bearing_between_points(lat_a: float,
