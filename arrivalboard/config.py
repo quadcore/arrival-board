@@ -1,6 +1,8 @@
 import os
 import tomllib
 
+from arrivalboard.exceptions import ConfigError
+
 
 APP_CONFIG = {}
 _config_path = ""
@@ -24,14 +26,14 @@ def init_config(config_path: str, app_config_filename: str):
     if APP_CONFIG["datasources"]["adsb"] == "opensky":
         _init_opensky()
     else:
-        raise ValueError("No valid ADSB source specified.")
+        raise ConfigError("No valid ADSB source specified.")
 
 
 def _init_opensky():
     try:
         APP_CONFIG["opensky"]["base_url"]
     except KeyError:
-        raise ValueError("Missing OpenSky base url.")
+        raise ConfigError("Missing OpenSky base url.")
 
     try:
         opensky_auth_filename = APP_CONFIG["opensky"]["auth_file"]
