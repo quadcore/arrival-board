@@ -1,8 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
 
-from models.aircraft import Aircraft
-from models.airport import Airport
+from arrivalboard.models.aircraft import Aircraft
+from arrivalboard.models.airport import Airport
 
 
 class ADSBSource(ABC):

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-import latlon
+import arrivalboard.latlon as latlon
 
 
 class Runway:
