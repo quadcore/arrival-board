@@ -58,8 +58,18 @@ class TestGetPointFromDistanceAndBearing:
         result = get_point_from_distance_and_bearing(41.977000, -87.908167, dist, 90)
         assert result == expected
 
-    def test_poop(self):
-        print(get_point_from_distance_and_bearing(41.977000, -87.908167, 10, 360))
+    @pytest.mark.parametrize("bearing,expected", [
+        (0, (42.121723, -87.908167)),
+        (8.4, (42.120167, -87.879664)),
+        (25, (42.108134, -87.825725)),
+        (90, (41.976836, -87.713494)),
+        (134.7, (41.87512, -87.770014)),
+        (271, (41.979361, -88.102818)),
+        (360, (42.121723, -87.908167)),
+    ])
+    def test_bearing_inpt(self, bearing, expected):
+        result = get_point_from_distance_and_bearing(41.977000, -87.908167, 10, bearing)
+        assert result == expected
 
 
 class TestGetBearingBetweenPoints:
