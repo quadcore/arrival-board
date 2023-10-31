@@ -10,11 +10,8 @@ def run():
     
     print(f"Running with application config:\n{APP_CONFIG}\n")
 
-    airport_source = AirportTomlSource()
-    airports = airport_source.get_airports()
-
-    arrivals = ArrivalsService(OpenSkyApi())
-    aircraft = arrivals.get_aircraft_by_runway(airports["KORD"])
+    arrivals = ArrivalsService(OpenSkyApi(), AirportTomlSource.from_files("config/airports"))
+    aircraft = arrivals.get_aircraft_by_runway("KORD")
 
     print(aircraft)
 

@@ -1,6 +1,7 @@
 import pytest
 
 from arrivalboard import config
+from arrivalboard.exceptions import ConfigError
 
 
 class TestInitConfig:
@@ -24,11 +25,11 @@ class TestInitConfig:
         assert "credentials" not in config.APP_CONFIG["opensky"]
 
     def test_raises_error_for_no_adsb_source(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ConfigError):
             self._init("arrivalboard-invalid-adsb.toml")
 
     def test_raises_error_for_invalid_opensky(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ConfigError):
             self._init("arrivalboard-invalid-opensky.toml")
 
     def test_raises_error_for_nonexistent_opensky_auth_file(self):
