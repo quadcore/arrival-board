@@ -3,7 +3,7 @@ import pytest
 from arrivalboard import config
 
 
-class TestConfig:
+class TestInitConfig:
 
     def test_initializes_app_config_opensky(self):
         self._init("arrivalboard-opensky.toml")
