@@ -84,4 +84,4 @@ def get_bearing_between_points(lat_a: float,
     y = math.cos(la1) * math.sin(la2) - math.sin(la1) * math.cos(la2) * math.cos(londelta)
     brng = math.atan2(x, y)
 
-    return (brng * 180 / math.pi + 360) % 360
+    return round((brng * 180 / math.pi + 360) % 360, 2)
