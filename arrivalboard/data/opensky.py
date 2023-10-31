@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from requests import Request
 from requests import Session
@@ -25,7 +24,7 @@ class OpenSkyApi(ADSBSource):
             # Default to non-authenticated requests.
             pass
 
-    def get_aircraft(self, airport: Airport) -> List[Aircraft]:
+    def get_aircraft(self, airport: Airport) -> list[Aircraft]:
         """Get aircraft within range of the specified airport.
 
         Keyword arguments:
@@ -53,8 +52,8 @@ class OpenSkyApi(ADSBSource):
 
         return self._parse_state_vectors(json_dict["states"])
 
-    def _parse_state_vectors(self, state_vectors: List[object]) -> List[Aircraft]:
-        aircraft: List[Aircraft] = []
+    def _parse_state_vectors(self, state_vectors: list[object]) -> list[Aircraft]:
+        aircraft: list[Aircraft] = []
 
         for v in state_vectors:
             # TODO: Handle this better
