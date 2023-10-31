@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-from models.airport import Airport
+from arrivalboard.models.airport import Airport
 
 
 class AirportSource(ABC):

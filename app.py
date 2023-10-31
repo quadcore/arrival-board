@@ -1,8 +1,8 @@
-from config import APP_CONFIG
-from config import init_config
-from data.airport_toml import AirportTomlSource
-from data.opensky import OpenSkyApi
-from services.arrivals import ArrivalsService
+from arrivalboard.config import APP_CONFIG
+from arrivalboard.config import init_config
+from arrivalboard.data.airport_toml import AirportTomlSource
+from arrivalboard.data.opensky import OpenSkyApi
+from arrivalboard.services.arrivals import ArrivalsService
 
 
 def run():

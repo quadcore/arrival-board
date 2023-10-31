@@ -1,7 +1,7 @@
-from data.adsb import ADSBSource
-from models.aircraft import Aircraft
-from models.airport import Airport
-from models.airport import Runway
+from arrivalboard.data.adsb import ADSBSource
+from arrivalboard.models.aircraft import Aircraft
+from arrivalboard.models.airport import Airport
+from arrivalboard.models.airport import Runway
 
 
 class ArrivalsService:

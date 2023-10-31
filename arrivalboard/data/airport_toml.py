@@ -1,9 +1,9 @@
 import os
 import tomllib
 
-from data.airport import AirportSource
-from models.airport import Airport
-from models.airport import Runway
+from arrivalboard.data.airport import AirportSource
+from arrivalboard.models.airport import Airport
+from arrivalboard.models.airport import Runway
 
 
 class AirportTomlSource(AirportSource):

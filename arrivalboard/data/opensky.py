@@ -4,11 +4,11 @@ from requests import Request
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
-from config import APP_CONFIG
-from data.adsb import ADSBSource
-import latlon
-from models.aircraft import Aircraft
-from models.airport import Airport
+from arrivalboard.config import APP_CONFIG
+from arrivalboard.data.adsb import ADSBSource
+import arrivalboard.latlon as latlon
+from arrivalboard.models.aircraft import Aircraft
+from arrivalboard.models.airport import Airport
 
 
 class OpenSkyApi(ADSBSource):
