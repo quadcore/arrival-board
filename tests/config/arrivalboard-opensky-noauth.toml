@@ -1,5 +1,5 @@
-[datasources]
-adsb = "opensky"
-
-[opensky]
+[datasources.adsb.opensky]
 base_url = "https://opensky/test"
+
+[datasources.airports.toml]
+folder = "../airdsb-airport-config/toml/"
