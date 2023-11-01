@@ -1,6 +1,6 @@
-[datasources]
-adsb = "opensky"
-
-[opensky]
+[datasources.adsb.opensky]
 base_url = "https://opensky/test"
 auth_file = "some_nonexistent_file.toml"
+
+[datasources.airports.toml]
+folder = "../airdsb-airport-config/toml/"

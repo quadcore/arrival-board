@@ -1,24 +1,17 @@
 import os
 import tomllib
-from typing import Self
 
+from arrivalboard.config import APP_CONFIG
 from arrivalboard.data.airport import AirportSource
-from arrivalboard.exceptions import ConfigError
 from arrivalboard.models.airport import Airport
 from arrivalboard.models.airport import Runway
 
 
 class AirportTomlSource(AirportSource):
 
-    @classmethod
-    def from_files(cls, folder_path: str) -> Self:
-        filenames = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
-        if not filenames:
-            raise ConfigError("No airport configuration files found.")
-
-        inst = cls()
-        inst.filenames = filenames
-        return inst
+    def __init__(self):
+        folder_path = APP_CONFIG["datasources"]["airports"]["toml"]["folder"]
+        self.filenames = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
 
     def get_airports(self) -> dict[str, Airport]:
         airports = {}

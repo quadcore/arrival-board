@@ -1,5 +1,0 @@
-[datasources]
-adsb = "opensky"
-
-[opensky]
-something_invalid = "test"

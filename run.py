@@ -6,11 +6,11 @@ from arrivalboard.services.arrivals import ArrivalsService
 
 
 def run():
-    init_config("config", "arrivalboard.toml")
+    init_config(app_config_filepath="config/arrivalboard.toml")
     
     print(f"Running with application config:\n{APP_CONFIG}\n")
 
-    arrivals = ArrivalsService(OpenSkyApi(), AirportTomlSource.from_files("config/airports"))
+    arrivals = ArrivalsService(adsb_source=OpenSkyApi(), airport_source=AirportTomlSource())
     aircraft = arrivals.get_aircraft_by_runway("KORD")
 
     print(aircraft)

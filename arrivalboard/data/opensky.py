@@ -15,11 +15,12 @@ class OpenSkyApi(ADSBSource):
 
     def __init__(self):
         self.session = Session()
-        self.base_url: str = APP_CONFIG["opensky"]["base_url"]
 
+        opensky_config = APP_CONFIG["datasources"]["adsb"]["opensky"]
+        self.base_url: str = opensky_config["base_url"]
         try:
-            self.username: str = APP_CONFIG["opensky"]["credentials"]["username"]
-            self.password: str = APP_CONFIG["opensky"]["credentials"]["password"]
+            self.username: str = opensky_config["credentials"]["username"]
+            self.password: str = opensky_config["credentials"]["password"]
         except KeyError:
             # Default to non-authenticated requests.
             pass
