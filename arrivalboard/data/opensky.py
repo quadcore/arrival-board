@@ -6,7 +6,9 @@ from requests.auth import HTTPBasicAuth
 
 from arrivalboard.config import APP_CONFIG
 from arrivalboard.data.adsb import ADSBSource
-import arrivalboard.latlon as latlon
+from arrivalboard.latlon import BoundingBox
+from arrivalboard.latlon import Coordinate
+from arrivalboard.latlon import get_bounding_square_from_point
 from arrivalboard.models.aircraft import Aircraft
 from arrivalboard.models.airport import Airport
 
@@ -33,8 +35,7 @@ class OpenSkyApi(ADSBSource):
         """
         # OpenSky works based on a bounding box so we create a square of a
         # specified size with its center being the airport's WGS84 coordinates.
-        area: latlon.BoundingBox = \
-            latlon.get_bounding_square_from_point(airport.lat, airport.lon, 15)
+        area: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon), 30)
 
         url = self.base_url + "/states/all"
         params = {

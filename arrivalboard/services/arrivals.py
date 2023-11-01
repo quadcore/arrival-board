@@ -17,18 +17,18 @@ class ArrivalsService:
 
         runway_aircraft = {}
         for runway in airport.runways.values():
-            runway_aircraft[runway.number] = []
+            runway_aircraft[runway.designator] = []
 
         # TODO: Optimize this code
         for aircraft in aircraft:
             for runway in airport.runways.values():
                 if self._is_on_final(aircraft, runway):
-                    runway_aircraft[runway.number].append(aircraft)
+                    runway_aircraft[runway.designator].append(aircraft)
                     continue
 
         return runway_aircraft
 
-    def _is_on_final(self, aircraft: Aircraft, runway: Runway, ):
+    def _is_on_final(self, aircraft: Aircraft, runway: Runway):
         if runway.final_bounds.lat_min <= aircraft.lat <= runway.final_bounds.lat_max and \
                 runway.final_bounds.lon_min <= aircraft.lon <= runway.final_bounds.lon_max:
             return True

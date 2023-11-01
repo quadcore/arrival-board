@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import math
+from typing import Self
 
 # Formulas courtesy of http://www.movable-type.co.uk/scripts/latlong.html
 #
@@ -11,6 +12,15 @@ EARTH_RADIUS_MILES = 3959
 
 
 @dataclass
+class Coordinate:
+    lat: float
+    lon: float
+
+    @classmethod
+    def from_list(cls, latlon_list: list[float, float]) -> Self:
+        return cls(lat=latlon_list[0], lon=latlon_list[1])
+
+@dataclass
 class BoundingBox:
     lat_min: float
     lon_min: float
@@ -18,70 +28,62 @@ class BoundingBox:
     lon_max: float
 
 
-def get_bounding_square_from_point(lat: float,
-                                   lon: float,
+def get_bounding_square_from_point(coord: Coordinate,
                                    radius_miles: float) -> BoundingBox:
     """Return a square BoundingBox with the specified radius.
 
     Keyword arguments:
-    lat -- the center point's latitude
-    lon -- the center point's longitude
+    coord -- the center point's latitude/longitude
     radius_miles -- the radius of the square
     """
-    lat_min, lon_min = get_point_from_distance_and_bearing(lat, lon, radius_miles, 225)
-    lat_max, lon_max = get_point_from_distance_and_bearing(lat, lon, radius_miles, 45)
+    coord_min = get_point_from_distance_and_bearing(coord, radius_miles, 225)
+    coord_max = get_point_from_distance_and_bearing(coord, radius_miles, 45)
 
-    return BoundingBox(
-        lat_min=lat_min,
-        lon_min=lon_min,
-        lat_max=lat_max,
-        lon_max=lon_max)
+    return BoundingBox(lat_min=coord_min.lat,
+                       lon_min=coord_min.lon,
+                       lat_max=coord_max.lat,
+                       lon_max=coord_max.lon)
 
 
-def get_point_from_distance_and_bearing(lat: float,
-                                        lon: float,
+def get_point_from_distance_and_bearing(coord: Coordinate,
                                         distance_miles: float,
-                                        bearing_degrees: float) -> (float, float):
-    """Return a lat/lon coordinate that is the specified distance and bearing
-    from the input lat/lon point.
+                                        bearing_degrees: float) -> Coordinate:
+    """Return a coordinate that is the specified distance and bearing
+    from the input coordinate.
 
     Keyword arguments:
-    lat -- the input latitude
-    lon -- the input longitude
+    coord -- the input latitude/longitude
     distance_miles -- the distance in miles for the resulting point
     bearing_degrees -- the bearing in degrees for the resulting point
     """
     dist = distance_miles / EARTH_RADIUS_MILES
     brng = math.radians(bearing_degrees)
-    la = math.radians(lat)
-    lo = math.radians(lon)
+    lat = math.radians(coord.lat)
+    lon = math.radians(coord.lon)
 
-    new_la = math.asin(math.sin(la) * math.cos(dist) + math.cos(la) * math.sin(dist) * math.cos(brng))
-    new_lo = lo + math.atan2(math.sin(brng) * math.sin(dist) * math.cos(la), math.cos(dist) - math.sin(la) * math.sin(new_la))
+    new_lat = math.asin(math.sin(lat) * math.cos(dist) + math.cos(lat) * math.sin(dist) * math.cos(brng))
+    new_lon = lon + math.atan2(math.sin(brng) * math.sin(dist) * math.cos(lat), math.cos(dist) - math.sin(lat) * math.sin(new_lat))
 
-    return round(math.degrees(new_la), 6), round(math.degrees(new_lo), 6)
+    return Coordinate(lat=round(math.degrees(new_lat), 6),
+                      lon=round(math.degrees(new_lon), 6))
 
 
-def get_bearing_between_points(lat_a: float,
-                               lon_a: float,
-                               lat_b: float,
-                               lon_b: float) -> float:
-    """Return a bearing in degrees between lat/lon point a and lat/lon point b.
+def get_bearing_between_points(coord_a: Coordinate,
+                               coord_b: Coordinate) -> float:
+    """Return a bearing in degrees between coordinate a and coordinate b.
 
     Keyword arguments:
-    lat_a -- the latitude for point a
-    lon_a -- the longitude for point a
-    lat_b -- the latitude for point b
-    lon_b -- the longitude for point b
+    coord_a -- the latitude/longitude for point a
+    coord_b -- the latitude/longitude for point b
     """
-    la1 = math.radians(lat_a)
-    lo1 = math.radians(lon_a)
-    la2 = math.radians(lat_b)
-    lo2 = math.radians(lon_b)
-    londelta = lo2 - lo1
+    lat_a = math.radians(coord_a.lat)
+    lon_a = math.radians(coord_a.lon)
+    lat_b = math.radians(coord_b.lat)
+    lon_b = math.radians(coord_b.lon)
+    londelta = lon_a - lon_b
 
-    x = math.cos(la2) * math.sin(londelta)
-    y = math.cos(la1) * math.sin(la2) - math.sin(la1) * math.cos(la2) * math.cos(londelta)
+    x = math.cos(lat_b) * math.sin(londelta)
+    y = math.cos(lat_a) * math.sin(lat_b) - math.sin(lat_a) * math.cos(lat_b) * math.cos(londelta)
     brng = math.atan2(x, y)
 
     return round((brng * 180 / math.pi + 360) % 360, 2)

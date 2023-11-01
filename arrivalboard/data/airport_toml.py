@@ -3,6 +3,7 @@ import tomllib
 
 from arrivalboard.config import APP_CONFIG
 from arrivalboard.data.airport import AirportSource
+from arrivalboard.latlon import Coordinate
 from arrivalboard.models.airport import Airport
 from arrivalboard.models.airport import Runway
 
@@ -26,12 +27,13 @@ class AirportTomlSource(AirportSource):
     
     def _parse_airport(self, airport_dict) -> Airport:
         runways = {}
-        runway_dict = {}
 
         for r in airport_dict["runways"].items():
-            runway_dict["number"] = r[0]
-            runway_dict.update(r[1])
-            runways[r[0]] = Runway(**runway_dict)
+            number = r[0]
+            threshold_a = Coordinate.from_list(r[1]["threshold_a"])
+            threshold_b = Coordinate.from_list(r[1]["threshold_b"])
+            runway = Runway(number, threshold_a, threshold_b)
+            runways[runway.designator] = runway
 
         airport_dict["runways"] = runways
 
