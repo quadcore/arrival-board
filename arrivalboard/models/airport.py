@@ -67,9 +67,9 @@ class Runway:
                 return threshold_degrees - 90
         else:
             if threshold_degrees > 180:
-                return threshold_degrees + 90
-            else:
                 return threshold_degrees - 90
+            else:
+                return threshold_degrees + 90
 
 
 @dataclass

@@ -80,7 +80,7 @@ def get_bearing_between_points(coord_a: Coordinate,
     lon_a = math.radians(coord_a.lon)
     lat_b = math.radians(coord_b.lat)
     lon_b = math.radians(coord_b.lon)
-    londelta = lon_a - lon_b
+    londelta = lon_b - lon_a
 
     x = math.cos(lat_b) * math.sin(londelta)
     y = math.cos(lat_a) * math.sin(lat_b) - math.sin(lat_a) * math.cos(lat_b) * math.cos(londelta)
