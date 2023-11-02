@@ -10,6 +10,8 @@ def run():
 
     print(f"Running with application config:\n{APP_CONFIG}\n")
 
+    print("Test")
+
     traffic = TrafficService(adsb_source=OpenSkyApi(), airport_source=AirportTomlReader())
     aircraft = traffic.get_resolved_by_runway("KORD")
 
