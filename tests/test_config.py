@@ -42,7 +42,7 @@ class TestInitConfig:
         assert config.APP_CONFIG == expected
 
     def test_raises_error_for_nonexistent_opensky_auth_file(self):
-        with pytest.raises(FileNotFoundError):
+        with pytest.raises(ValueError):
             self._init("arrivalboard-invalid-opensky-auth.toml")
 
     def _init(self, config_filename: str):

@@ -8,7 +8,7 @@ from arrivalboard.traffic import TrafficService
 def run():
     init_config(app_config_filepath="config/arrivalboard.toml")
 
-    print(f"Running with application config:\n{APP_CONFIG}\n") 
+    print(f"Running with application config:\n{APP_CONFIG}\n")
 
     traffic = TrafficService(adsb_source=OpenSkyApi(), airport_source=AirportTomlReader())
     aircraft = traffic.get_resolved_by_runway("KORD")
