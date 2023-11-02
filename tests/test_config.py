@@ -11,16 +11,19 @@ class TestInitConfig:
         expected = {
             'datasources': {
                 'adsb': {
-                    'opensky': {'base_url': 'https://opensky/test', 'auth_file': 'tests/config/opensky_auth.toml', 'credentials': {'username': 'test-username', 'password': 'test-password'}}
-                }, 
+                    'opensky': {
+                        'base_url': 'https://opensky/test',
+                        'auth_file': 'tests/config/opensky_auth.toml',
+                        'credentials': {'username': 'test-username', 'password': 'test-password'}
+                    }
+                },
                 'airports': {
                     'toml': {'folder': '../airdsb-airport-config/toml/'}
                 }
             }
         }
-        
+
         assert config.APP_CONFIG == expected
-        
 
     def test_initializes_app_config_opensky_without_auth(self):
         self._init("arrivalboard-opensky-noauth.toml")
@@ -29,13 +32,13 @@ class TestInitConfig:
             'datasources': {
                 'adsb': {
                     'opensky': {'base_url': 'https://opensky/test'}
-                }, 
+                },
                 'airports': {
                     'toml': {'folder': '../airdsb-airport-config/toml/'}
                 }
             }
         }
-        
+
         assert config.APP_CONFIG == expected
 
     def test_raises_error_for_nonexistent_opensky_auth_file(self):

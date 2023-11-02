@@ -22,7 +22,7 @@ class Runway:
         threshold_degrees = self._get_threshold_degrees()
 
         if threshold_degrees > 180:
-            offset_a_degrees= (threshold_degrees + 180) - 360
+            offset_a_degrees = (threshold_degrees + 180) - 360
         else:
             offset_a_degrees = threshold_degrees + 180
 
@@ -36,7 +36,8 @@ class Runway:
             distance_miles=0.1,
             bearing_degrees=threshold_degrees)
 
-        threshold_perpendicular_degrees = self._get_threshold_perpendicular_degrees(threshold_degrees)
+        threshold_perpendicular_degrees = \
+            self._get_threshold_perpendicular_degrees(threshold_degrees)
 
         final_b = latlon.get_point_from_distance_and_bearing(
             coord=offset_b,
