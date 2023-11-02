@@ -20,6 +20,7 @@ class Coordinate:
     def from_list(cls, latlon_list: list[float, float]) -> Self:
         return cls(lat=latlon_list[0], lon=latlon_list[1])
 
+
 @dataclass
 class BoundingBox:
     lat_min: float
@@ -61,8 +62,11 @@ def get_point_from_distance_and_bearing(coord: Coordinate,
     lat = math.radians(coord.lat)
     lon = math.radians(coord.lon)
 
-    new_lat = math.asin(math.sin(lat) * math.cos(dist) + math.cos(lat) * math.sin(dist) * math.cos(brng))
-    new_lon = lon + math.atan2(math.sin(brng) * math.sin(dist) * math.cos(lat), math.cos(dist) - math.sin(lat) * math.sin(new_lat))
+    new_lat = math.asin(
+        math.sin(lat) * math.cos(dist) + math.cos(lat) * math.sin(dist) * math.cos(brng))
+    new_lon = lon + math.atan2(
+        math.sin(brng) * math.sin(dist) * math.cos(lat),
+        math.cos(dist) - math.sin(lat) * math.sin(new_lat))
 
     return Coordinate(lat=round(math.degrees(new_lat), 6),
                       lon=round(math.degrees(new_lon), 6))

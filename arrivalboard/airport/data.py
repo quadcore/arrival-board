@@ -32,7 +32,7 @@ class AirportTomlReader(AirportSource):
                 airports[airport.icao_code] = airport
 
         return airports
-    
+
     def _parse_airport(self, airport_dict) -> Airport:
         runways = {}
 

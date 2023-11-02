@@ -79,7 +79,7 @@ class OpenSkyApi(ADSBSource):
                 aircraft.append(
                     Aircraft(**cleaned_data)
                 )
-            except:
+            except TypeError:
                 pass
 
         return aircraft
