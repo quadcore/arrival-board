@@ -1,8 +1,8 @@
+from arrivalboard.aircraft.data import OpenSkyApi
+from arrivalboard.airport.data import AirportTomlReader
 from arrivalboard.config import APP_CONFIG
 from arrivalboard.config import init_config
-from arrivalboard.data.airport_toml import AirportTomlSource
-from arrivalboard.data.opensky import OpenSkyApi
-from arrivalboard.services.arrivals import ArrivalsService
+from arrivalboard.traffic import TrafficService
 
 
 def run():
@@ -10,8 +10,8 @@ def run():
     
     print(f"Running with application config:\n{APP_CONFIG}\n")
 
-    arrivals = ArrivalsService(adsb_source=OpenSkyApi(), airport_source=AirportTomlSource())
-    aircraft = arrivals.get_aircraft_by_runway("KORD")
+    traffic = TrafficService(adsb_source=OpenSkyApi(), airport_source=AirportTomlReader())
+    aircraft = traffic.get_resolved_by_runway("KORD")
 
     print(aircraft)
 

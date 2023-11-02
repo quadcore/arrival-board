@@ -1,14 +1,22 @@
+from abc import ABC
+from abc import abstractmethod
 import os
 import tomllib
 
+from arrivalboard.airport.models import Airport
+from arrivalboard.airport.models import Runway
 from arrivalboard.config import APP_CONFIG
-from arrivalboard.data.airport import AirportSource
 from arrivalboard.latlon import Coordinate
-from arrivalboard.models.airport import Airport
-from arrivalboard.models.airport import Runway
 
 
-class AirportTomlSource(AirportSource):
+class AirportSource(ABC):
+
+    @abstractmethod
+    def get_airports(self) -> dict[str, Airport]:
+        pass
+
+
+class AirportTomlReader(AirportSource):
 
     def __init__(self):
         folder_path = APP_CONFIG["datasources"]["airports"]["toml"]["folder"]

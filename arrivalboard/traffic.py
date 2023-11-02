@@ -1,17 +1,16 @@
-from arrivalboard.data.adsb import ADSBSource
-from arrivalboard.data.airport import AirportSource
-from arrivalboard.models.aircraft import Aircraft
-from arrivalboard.models.airport import Airport
-from arrivalboard.models.airport import Runway
+from arrivalboard.aircraft.data import ADSBSource
+from arrivalboard.aircraft.models import Aircraft
+from arrivalboard.airport.data import AirportSource
+from arrivalboard.airport.models import Runway
 
 
-class ArrivalsService:
+class TrafficService:
 
     def __init__(self, adsb_source: ADSBSource, airport_source: AirportSource):
         self.adsb_source = adsb_source
         self.airports = airport_source.get_airports()
 
-    def get_aircraft_by_runway(self, airport_icao_code: str) -> dict[str, Aircraft]:
+    def get_resolved_by_runway(self, airport_icao_code: str) -> dict[str, Aircraft]:
         airport = self.airports[airport_icao_code]
         aircraft = self.adsb_source.get_aircraft(airport)
 

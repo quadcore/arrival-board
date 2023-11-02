@@ -1,16 +1,23 @@
-from dataclasses import dataclass
+from abc import ABC
+from abc import abstractmethod
 
 from requests import Request
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
 from arrivalboard.config import APP_CONFIG
-from arrivalboard.data.adsb import ADSBSource
+from arrivalboard.aircraft.models import Aircraft
+from arrivalboard.airport.models import Airport
 from arrivalboard.latlon import BoundingBox
 from arrivalboard.latlon import Coordinate
 from arrivalboard.latlon import get_bounding_square_from_point
-from arrivalboard.models.aircraft import Aircraft
-from arrivalboard.models.airport import Airport
+
+
+class ADSBSource(ABC):
+
+    @abstractmethod
+    def get_aircraft(self, airport: Airport) -> list[Aircraft]:
+        pass
 
 
 class OpenSkyApi(ADSBSource):
