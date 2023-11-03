@@ -4,6 +4,7 @@ from arrivalboard.latlon import BoundingBox as Bbox
 from arrivalboard.latlon import Coordinate as Coord
 from arrivalboard.latlon import get_bearing_between_points
 from arrivalboard.latlon import get_bounding_square_from_point
+from arrivalboard.latlon import get_distance_between_points
 from arrivalboard.latlon import get_point_from_distance_and_bearing
 
 
@@ -74,6 +75,19 @@ class TestGetPointFromDistanceAndBearing:
     def test_bearing_input(self, bearing, expected):
         result = get_point_from_distance_and_bearing(
             coord=Coord(41.977000, -87.908167), distance_miles=10, bearing_degrees=bearing)
+        assert result == expected
+
+
+class TestGetDistanceBetweenPoints:
+
+    @pytest.mark.parametrize("coord_a,coord_b,expected", [
+        (Coord(41.977000, -87.908167), Coord(42.113285, -87.90182), 9.42),
+        (Coord(41.977000, -87.908167), Coord(41.88268, -87.623317), 16.03),
+        (Coord(41.977000, -87.908167), Coord(41.977100, -87.908267), 0.01),
+        (Coord(41.977000, -87.908167), Coord(41.977000, -87.908167), 0),
+    ])
+    def test_lat_lon_input(self, coord_a, coord_b, expected):
+        result = get_distance_between_points(coord_a, coord_b)
         assert result == expected
 
 

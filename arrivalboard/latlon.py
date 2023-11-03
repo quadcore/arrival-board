@@ -49,8 +49,8 @@ def get_bounding_square_from_point(coord: Coordinate,
 def get_point_from_distance_and_bearing(coord: Coordinate,
                                         distance_miles: float,
                                         bearing_degrees: float) -> Coordinate:
-    """Return a coordinate that is the specified distance and bearing
-    from the input coordinate.
+    """Return a point that is the specified distance and bearing
+    from the input point.
 
     Keyword arguments:
     coord -- the input latitude/longitude
@@ -72,9 +72,29 @@ def get_point_from_distance_and_bearing(coord: Coordinate,
                       lon=round(math.degrees(new_lon), 6))
 
 
+def get_distance_between_points(coord_a: Coordinate,
+                                coord_b: Coordinate) -> float:
+    """Return a distance in miles between two points.
+
+    Keyword arguments:
+    coord a -- the latitude/longitude for point a
+    coord b -- the latitude/longitude for point b
+    """
+    lat_a = math.radians(coord_a.lat)
+    lat_b = math.radians(coord_b.lat)
+    delta_lat = math.radians((coord_b.lat - coord_a.lat))
+    delta_lon = math.radians((coord_b.lon - coord_a.lon))
+
+    x = math.sin(delta_lat / 2) * math.sin(delta_lat / 2) + math.cos(lat_a) * math.cos(lat_b) * \
+        math.sin(delta_lon / 2) * math.sin(delta_lon / 2)
+    y = 2 * math.atan2(math.sqrt(x), math.sqrt(1 - x))
+
+    return round(EARTH_RADIUS_MILES * y, 2)
+
+
 def get_bearing_between_points(coord_a: Coordinate,
                                coord_b: Coordinate) -> float:
-    """Return a bearing in degrees between coordinate a and coordinate b.
+    """Return a bearing in degrees between two points.
 
     Keyword arguments:
     coord_a -- the latitude/longitude for point a
