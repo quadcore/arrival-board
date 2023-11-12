@@ -26,11 +26,11 @@ class Coordinate:
 
 @dataclass
 class BoundingBox:
-    point_a: Coordinate
-    point_b: Coordinate
+    coord_a: Coordinate
+    coord_b: Coordinate
 
     def __repr__(self):
-        return f"{self.point_a.lat}, {self.point_a.lon} {self.point_b.lat}, {self.point_b.lon}"
+        return f"{self.coord_a.lat}, {self.coord_a.lon} {self.coord_b.lat}, {self.coord_b.lon}"
 
 
 def get_bounding_square_from_point(coord: Coordinate,

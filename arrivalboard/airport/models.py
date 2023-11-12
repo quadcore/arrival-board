@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from arrivalboard.latlon import BoundingBox
 from arrivalboard.latlon import Coordinate
 import arrivalboard.latlon as latlon
 
@@ -33,7 +34,7 @@ class Runway:
         else:
             return perp_bearing[1]
 
-    def _calculate_final_bounds(self) -> tuple[Coordinate, Coordinate]:
+    def _calculate_final_bounds(self) -> BoundingBox:
         if self._threshold_degrees > 180:
             offset_a_degrees = (self._threshold_degrees + 180) - 360
         else:
@@ -55,10 +56,10 @@ class Runway:
 
         final_b = latlon.get_point_from_distance_and_bearing(
             coord=offset_b,
-            distance_miles=20,
+            distance_miles=15,
             bearing_degrees=90)
 
-        return offset_a, final_b
+        return BoundingBox(offset_a, final_b)
 
     def __repr__(self):
         return self.designator

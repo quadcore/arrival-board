@@ -46,10 +46,10 @@ class OpenSkyApi(ADSBSource):
 
         url = self.base_url + "/states/all"
         params = {
-            "lamin": min(box.point_a.lat, box.point_b.lat),
-            "lomin": min(box.point_a.lon, box.point_b.lon),
-            "lamax": max(box.point_a.lat, box.point_b.lat),
-            "lomax": max(box.point_a.lon, box.point_b.lon),
+            "lamin": min(box.coord_a.lat, box.coord_b.lat),
+            "lomin": min(box.coord_a.lon, box.coord_b.lon),
+            "lamax": max(box.coord_a.lat, box.coord_b.lat),
+            "lomax": max(box.coord_a.lon, box.coord_b.lon),
         }
 
         req = Request("GET", url, params=params)
