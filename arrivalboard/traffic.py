@@ -41,8 +41,16 @@ class Traffic:
 
         # TODO: Optimize this code
         for aircraft in aircraft:
+            # TODO: Base this on field elevation
+            if aircraft.baro_alt_ft < 670 or aircraft.baro_alt_ft > 5000:
+                continue
+
             for runway in airport.runways.values():
-                if self._is_on_final(aircraft, runway):
+                # TODO: Base this on constant setting that can be modified
+                if not aircraft.track - 2 < runway.true_heading < aircraft.track + 2:
+                    continue
+
+                if self._is_lined_up(aircraft, runway):
                     runway_aircraft[runway.designator].append(aircraft)
                     continue
 
@@ -51,9 +59,16 @@ class Traffic:
 
         return runway_aircraft
 
-    def _is_on_final(self, aircraft: Aircraft, runway: Runway):
-        if runway.final_bounds.lat_min <= aircraft.lat <= runway.final_bounds.lat_max and \
-                runway.final_bounds.lon_min <= aircraft.lon <= runway.final_bounds.lon_max:
+    def _is_lined_up(self, aircraft: Aircraft, runway: Runway):
+        coord_a = runway.final_bounds[0]
+        coord_b = runway.final_bounds[1]
+
+        lat_min = min(coord_a.lat, coord_b.lat)
+        lat_max = max(coord_a.lat, coord_b.lat)
+        lon_min = min(coord_a.lon, coord_b.lon)
+        lon_max = max(coord_a.lon, coord_b.lon)
+
+        if lat_min <= aircraft.lat <= lat_max and lon_min <= aircraft.lon <= lon_max:
             return True
 
         return False
