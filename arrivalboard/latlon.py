@@ -20,13 +20,17 @@ class Coordinate:
     def from_list(cls, latlon_list: list[float, float]) -> Self:
         return cls(lat=latlon_list[0], lon=latlon_list[1])
 
+    def __repr__(self):
+        return f"{self.lat}, {self.lon}"
+
 
 @dataclass
 class BoundingBox:
-    lat_min: float
-    lon_min: float
-    lat_max: float
-    lon_max: float
+    coord_a: Coordinate
+    coord_b: Coordinate
+
+    def __repr__(self):
+        return f"{self.coord_a.lat}, {self.coord_a.lon} {self.coord_b.lat}, {self.coord_b.lon}"
 
 
 def get_bounding_square_from_point(coord: Coordinate,
@@ -34,16 +38,15 @@ def get_bounding_square_from_point(coord: Coordinate,
     """Return a square BoundingBox with the specified radius.
 
     Keyword arguments:
-    coord -- the center point's latitude/longitude
+    coord -- the square's center point latitude/longitude
     radius_miles -- the radius of the square
     """
-    coord_min = get_point_from_distance_and_bearing(coord, radius_miles, 225)
-    coord_max = get_point_from_distance_and_bearing(coord, radius_miles, 45)
+    # The NW point from the center of the square.
+    coord_a = get_point_from_distance_and_bearing(coord, radius_miles, 315)
+    # The SE point from the center of the square.
+    coord_b = get_point_from_distance_and_bearing(coord, radius_miles, 135)
 
-    return BoundingBox(lat_min=coord_min.lat,
-                       lon_min=coord_min.lon,
-                       lat_max=coord_max.lat,
-                       lon_max=coord_max.lon)
+    return BoundingBox(coord_a, coord_b)
 
 
 def get_point_from_distance_and_bearing(coord: Coordinate,
@@ -110,4 +113,33 @@ def get_bearing_between_points(coord_a: Coordinate,
     y = math.cos(lat_a) * math.sin(lat_b) - math.sin(lat_a) * math.cos(lat_b) * math.cos(londelta)
     brng = math.atan2(x, y)
 
-    return round((brng * 180 / math.pi + 360) % 360, 2)
+    brng_deg = round((brng * 180 / math.pi + 360) % 360, 2)
+    if brng_deg == 0.0:
+        brng_deg = 360.0
+
+    return brng_deg
+
+
+def get_perpendicular_bearing_between_points(coord_a: Coordinate,
+                                             coord_b: Coordinate) -> tuple[float, float]:
+    """Return a tuple with the two perpendicular degree bearings (+90 degrees and
+    -90 degrees) between two points.
+
+    Keyword arguments:
+    coord_a -- the latitude/longitude for point a
+    coord_b -- the latitude/longitude for point b
+    """
+    brng = math.radians(get_bearing_between_points(coord_a, coord_b))
+
+    perp_brng_a = brng + math.pi / 2
+    perp_brng_b = brng - math.pi / 2
+
+    perp_brng_a_deg = round((perp_brng_a * 180 / math.pi + 360) % 360, 2)
+    perp_brng_b_deg = round((perp_brng_b * 180 / math.pi + 360) % 360, 2)
+
+    if perp_brng_a_deg == 0.0:
+        perp_brng_a_deg = 360.0
+    if perp_brng_b_deg == 0.0:
+        perp_brng_b_deg = 360.0
+
+    return perp_brng_a_deg, perp_brng_b_deg

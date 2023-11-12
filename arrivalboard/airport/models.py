@@ -13,18 +13,32 @@ class Runway:
                  threshold_b: Coordinate):
         self._threshold_a = threshold_a
         self._threshold_b = threshold_b
+        self._threshold_degrees = latlon.get_bearing_between_points(
+            coord_a=self._threshold_a,
+            coord_b=self._threshold_b)
 
         self.designator = designator.replace("-", "")
-        self.number = int(designator.split("-")[0]) * 10
-        self.final_bounds = self._get_final_bounds()
+        self.heading = int(designator.split("-")[0]) * 10
+        self.true_heading = self._calculate_true_heading()
+        self.final_bounds = self._calculate_final_bounds()
 
-    def _get_final_bounds(self) -> latlon.BoundingBox:
-        threshold_degrees = self._get_threshold_degrees()
+    def _calculate_true_heading(self) -> float:
+        perp_bearing: (float, float) = latlon.get_perpendicular_bearing_between_points(
+            coord_a=self._threshold_a,
+            coord_b=self._threshold_b)
 
-        if threshold_degrees > 180:
-            offset_a_degrees = (threshold_degrees + 180) - 360
+        # The threshold's perpendicular bearing that is closest to the runway's heading
+        # is the runway's true heading.
+        if abs(self.heading - perp_bearing[0]) < abs(self.heading - perp_bearing[1]):
+            return perp_bearing[0]
         else:
-            offset_a_degrees = threshold_degrees + 180
+            return perp_bearing[1]
+
+    def _calculate_final_bounds(self) -> BoundingBox:
+        if self._threshold_degrees > 180:
+            offset_a_degrees = (self._threshold_degrees + 180) - 360
+        else:
+            offset_a_degrees = self._threshold_degrees + 180
 
         offset_a = latlon.get_point_from_distance_and_bearing(
             coord=self._threshold_a,
@@ -34,43 +48,21 @@ class Runway:
         offset_b = latlon.get_point_from_distance_and_bearing(
             coord=self._threshold_b,
             distance_miles=0.1,
-            bearing_degrees=threshold_degrees)
+            bearing_degrees=self._threshold_degrees)
 
-        threshold_perpendicular_degrees = \
-            self._get_threshold_perpendicular_degrees(threshold_degrees)
+        inverted_true_heading = self.true_heading + 180
+        if inverted_true_heading > 360:
+            inverted_true_heading -= 360
 
         final_b = latlon.get_point_from_distance_and_bearing(
             coord=offset_b,
-            distance_miles=20,
-            bearing_degrees=threshold_perpendicular_degrees)
+            distance_miles=15,
+            bearing_degrees=90)
 
-        # TODO: Make this prettier
-        lat_min = offset_a.lat if offset_a.lat < final_b.lat else final_b.lat
-        lon_min = offset_a.lon if offset_a.lon < final_b.lon else final_b.lon
-        lat_max = offset_a.lat if offset_a.lat > final_b.lat else final_b.lat
-        lon_max = offset_a.lon if offset_a.lon > final_b.lon else final_b.lon
+        return BoundingBox(offset_a, final_b)
 
-        return BoundingBox(lat_min=lat_min,
-                           lon_min=lon_min,
-                           lat_max=lat_max,
-                           lon_max=lon_max)
-
-    def _get_threshold_degrees(self):
-        return latlon.get_bearing_between_points(
-            coord_a=self._threshold_a,
-            coord_b=self._threshold_b)
-
-    def _get_threshold_perpendicular_degrees(self, threshold_degrees: float):
-        if self.number > 180:
-            if threshold_degrees > 180:
-                return abs(360 - (threshold_degrees + 90))
-            else:
-                return threshold_degrees - 90
-        else:
-            if threshold_degrees > 180:
-                return threshold_degrees - 90
-            else:
-                return threshold_degrees + 90
+    def __repr__(self):
+        return self.designator
 
 
 @dataclass

@@ -42,14 +42,14 @@ class OpenSkyApi(ADSBSource):
         """
         # OpenSky works based on a bounding box so we create a square of a
         # specified size with its center being the airport's WGS84 coordinates.
-        area: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon), 30)
+        box: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon), 30)
 
         url = self.base_url + "/states/all"
         params = {
-            "lamin": area.lat_min,
-            "lomin": area.lon_min,
-            "lamax": area.lat_max,
-            "lomax": area.lon_max,
+            "lamin": min(box.coord_a.lat, box.coord_b.lat),
+            "lomin": min(box.coord_a.lon, box.coord_b.lon),
+            "lamax": max(box.coord_a.lat, box.coord_b.lat),
+            "lomax": max(box.coord_a.lon, box.coord_b.lon),
         }
 
         req = Request("GET", url, params=params)
