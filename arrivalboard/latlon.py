@@ -24,12 +24,21 @@ class Coordinate:
         return f"{self.lat}, {self.lon}"
 
 
+@dataclass
+class BoundingBox:
+    point_a: Coordinate
+    point_b: Coordinate
+
+    def __repr__(self):
+        return f"{self.point_a.lat}, {self.point_a.lon} {self.point_b.lat}, {self.point_b.lon}"
+
+
 def get_bounding_square_from_point(coord: Coordinate,
-                                   radius_miles: float) -> tuple[Coordinate, Coordinate]:
-    """Return two coordinates that denote a square with the specified radius.
+                                   radius_miles: float) -> BoundingBox:
+    """Return a square BoundingBox with the specified radius.
 
     Keyword arguments:
-    coord -- the square's center point Coordinate
+    coord -- the square's center point latitude/longitude
     radius_miles -- the radius of the square
     """
     # The NW point from the center of the square.
@@ -37,7 +46,7 @@ def get_bounding_square_from_point(coord: Coordinate,
     # The SE point from the center of the square.
     coord_b = get_point_from_distance_and_bearing(coord, radius_miles, 135)
 
-    return coord_a, coord_b
+    return BoundingBox(coord_a, coord_b)
 
 
 def get_point_from_distance_and_bearing(coord: Coordinate,
