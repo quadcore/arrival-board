@@ -57,7 +57,7 @@ class Runway:
         final_b = latlon.get_point_from_distance_and_bearing(
             coord=offset_b,
             distance_miles=15,
-            bearing_degrees=90)
+            bearing_degrees=inverted_true_heading)
 
         return BoundingBox(offset_a, final_b)
 

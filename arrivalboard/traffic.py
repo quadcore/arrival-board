@@ -61,7 +61,7 @@ class Traffic:
 
     def _is_lined_up(self, aircraft: Aircraft, runway: Runway):
         coord_a = runway.final_bounds.coord_a
-        coord_b = runway.final_bounds.coord_a
+        coord_b = runway.final_bounds.coord_b
 
         lat_min = min(coord_a.lat, coord_b.lat)
         lat_max = max(coord_a.lat, coord_b.lat)
