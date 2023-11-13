@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from arrivalboard.aircraft.models import Aircraft
 from arrivalboard.latlon import BoundingBox
 from arrivalboard.latlon import Coordinate
 import arrivalboard.latlon as latlon
@@ -13,9 +14,8 @@ class Runway:
                  threshold_b: Coordinate):
         self._threshold_a = threshold_a
         self._threshold_b = threshold_b
-        self._threshold_degrees = latlon.get_bearing_between_points(
-            coord_a=self._threshold_a,
-            coord_b=self._threshold_b)
+        self._threshold_degrees = \
+            latlon.get_bearing_between_points(self._threshold_a, self._threshold_b)
 
         self.designator = designator.replace("-", "")
         self.heading = int(designator.split("-")[0]) * 10
@@ -23,9 +23,8 @@ class Runway:
         self.final_bounds = self._calculate_final_bounds()
 
     def _calculate_true_heading(self) -> float:
-        perp_bearing: (float, float) = latlon.get_perpendicular_bearing_between_points(
-            coord_a=self._threshold_a,
-            coord_b=self._threshold_b)
+        perp_bearing: tuple[float, float] = \
+            latlon.get_perpendicular_bearing_between_points(self._threshold_a, self._threshold_b)
 
         # The threshold's perpendicular bearing that is closest to the runway's heading
         # is the runway's true heading.
@@ -60,6 +59,23 @@ class Runway:
             bearing_degrees=inverted_true_heading)
 
         return BoundingBox(offset_a, final_b)
+
+    def is_aircraft_lined_up(self, aircraft: Aircraft) -> bool:
+        if not aircraft.track - 2 < self.true_heading < aircraft.track + 2:
+            return False
+
+        coord_a = self.final_bounds.coord_a
+        coord_b = self.final_bounds.coord_b
+
+        lat_min = min(coord_a.lat, coord_b.lat)
+        lat_max = max(coord_a.lat, coord_b.lat)
+        lon_min = min(coord_a.lon, coord_b.lon)
+        lon_max = max(coord_a.lon, coord_b.lon)
+
+        if lat_min <= aircraft.lat <= lat_max and lon_min <= aircraft.lon <= lon_max:
+            return True
+
+        return False
 
     def __repr__(self):
         return self.designator
