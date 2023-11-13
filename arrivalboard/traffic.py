@@ -3,7 +3,6 @@ from typing import Callable
 from arrivalboard.aircraft.data import ADSBSource
 from arrivalboard.aircraft.models import Aircraft
 from arrivalboard.airport.models import Airport
-from arrivalboard.airport.models import Runway
 from arrivalboard.latlon import Coordinate
 from arrivalboard.latlon import get_distance_between_points
 
@@ -46,11 +45,7 @@ class Traffic:
                 continue
 
             for runway in airport.runways.values():
-                # TODO: Base this on constant setting that can be modified
-                if not aircraft.track - 2 < runway.true_heading < aircraft.track + 2:
-                    continue
-
-                if self._is_lined_up(aircraft, runway):
+                if runway.is_aircraft_lined_up(aircraft):
                     runway_aircraft[runway.designator].append(aircraft)
                     continue
 
@@ -58,17 +53,3 @@ class Traffic:
             aircraft.sort(key=sorter_func)
 
         return runway_aircraft
-
-    def _is_lined_up(self, aircraft: Aircraft, runway: Runway):
-        coord_a = runway.final_bounds.coord_a
-        coord_b = runway.final_bounds.coord_b
-
-        lat_min = min(coord_a.lat, coord_b.lat)
-        lat_max = max(coord_a.lat, coord_b.lat)
-        lon_min = min(coord_a.lon, coord_b.lon)
-        lon_max = max(coord_a.lon, coord_b.lon)
-
-        if lat_min <= aircraft.lat <= lat_max and lon_min <= aircraft.lon <= lon_max:
-            return True
-
-        return False
