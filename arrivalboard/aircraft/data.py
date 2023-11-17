@@ -7,6 +7,7 @@ import requests
 from requests import Request
 from requests import Session
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import JSONDecodeError
 
 from arrivalboard.config import APP_CONFIG
 from arrivalboard.aircraft.models import Aircraft
@@ -14,6 +15,9 @@ from arrivalboard.airport.models import Airport
 from arrivalboard.latlon import BoundingBox
 from arrivalboard.latlon import Coordinate
 from arrivalboard.latlon import get_bounding_square_from_point
+
+
+DEFAULT_RADIUS = 30
 
 
 class ADSBSource(ABC):
@@ -29,44 +33,56 @@ class AdsbFi(ADSBSource):
         adsbfi_config = APP_CONFIG["datasources"]["adsb"]["adsbfi"]
         self.base_url: str = adsbfi_config["base_url"]
 
-    def get_aircraft(self, airport: Airport) -> list[Aircraft]:
-        url = urljoin(self.base_url, f"v2/lat/{airport.lat}/lon/{airport.lon}/dist/30")
+    def get_aircraft(self, airport: Airport, radius=DEFAULT_RADIUS) -> list[Aircraft]:
+        """Get aircraft within range of the specified airport.
+
+        Keyword arguments:
+        airport -- the airport to get aircraft for
+        """
+        url = urljoin(self.base_url, f"v2/lat/{airport.lat}/lon/{airport.lon}/dist/{radius}")
 
         resp = requests.get(url)
 
         if resp.status_code != 200:
             sys.exit(f"adsb.fi error: {resp.status_code}")
 
-        json_dict = resp.json()
+        try:
+            json_dict = resp.json()
+        except JSONDecodeError as e:
+            sys.exit(f"adsb.fi error: {e}")
 
-        return self._parse_aircraft(json_dict["aircraft"])
+        return self._parse_aircraft(json_dict["aircraft"], airport)
 
-    def _parse_aircraft(self, objects: list[object]) -> list[Aircraft]:
+    def _parse_aircraft(self, objects: list[object], airport: Airport) -> list[Aircraft]:
         def get_or_default(object):
             def inner(attr, default="N/A"):
                 return object.get(attr, default)
             return inner
 
-        aircraft = []
+        aircraft: list[Aircraft] = []
 
         for o in objects:
             get = get_or_default(o)
 
             baro_alt_ft = get("alt_baro", 0)
             if (baro_alt_ft == "ground"):
-                # TODO: Set to airport elevation
-                baro_alt_ft = 0
+                baro_alt_ft = airport.elevation
 
-            cleaned_data = {
-                "callsign": get("flight"),
-                "type": get("desc"),
-                "baro_alt_ft": baro_alt_ft,
-                "vert_rate_ftm": get("baro_rate", 0),
-                "ground_speed": get("gs", 0),
-                "track": get("track", 0),
-                "lat": get("lat", 0),
-                "lon": get("lon", 0),
-            }
+            try:
+                cleaned_data = {
+                    "callsign": get("flight"),
+                    "type": get("desc"),
+                    "baro_alt_ft": int(baro_alt_ft),
+                    "vert_rate_ftm": int(get("baro_rate", 0)),
+                    "ground_speed": float(get("gs", 0)),
+                    "track": float(get("track", 0)),
+                    "lat": float(get("lat", 0)),
+                    "lon": float(get("lon", 0)),
+                }
+            except (TypeError, ValueError):
+                # TODO: Handle
+                continue
+
             aircraft.append(
                 Aircraft(**cleaned_data)
             )
@@ -77,8 +93,6 @@ class AdsbFi(ADSBSource):
 class OpenSkyApi(ADSBSource):
 
     def __init__(self):
-        self.session = Session()
-
         opensky_config = APP_CONFIG["datasources"]["adsb"]["opensky"]
         self.base_url: str = opensky_config["base_url"]
         try:
@@ -88,7 +102,7 @@ class OpenSkyApi(ADSBSource):
             # Default to non-authenticated requests.
             pass
 
-    def get_aircraft(self, airport: Airport) -> list[Aircraft]:
+    def get_aircraft(self, airport: Airport, radius=DEFAULT_RADIUS) -> list[Aircraft]:
         """Get aircraft within range of the specified airport.
 
         Keyword arguments:
@@ -96,7 +110,8 @@ class OpenSkyApi(ADSBSource):
         """
         # OpenSky works based on a bounding box so we create a square of a
         # specified size with its center being the airport's WGS84 coordinates.
-        box: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon), 30)
+        box: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon),
+                                                          radius)
 
         url = urljoin(self.base_url, "states/all")
         params = {
@@ -110,12 +125,16 @@ class OpenSkyApi(ADSBSource):
         if hasattr(self, "username") and hasattr(self, "password"):
             req.auth = HTTPBasicAuth(self.username, self.password)
 
-        resp = self.session.send(req.prepare())
+        with Session() as s:
+            resp = s.send(req.prepare())
 
         if resp.status_code != 200:
             sys.exit(f"OpenSky error: {resp.status_code}")
 
-        json_dict = resp.json()
+        try:
+            json_dict = resp.json()
+        except JSONDecodeError as e:
+            sys.exit(f"OpenSky error: {e}")
 
         return self._parse_state_vectors(json_dict["states"])
 
@@ -134,10 +153,12 @@ class OpenSkyApi(ADSBSource):
                     "lat": round(v[6], 6),
                     "lon": round(v[5], 6),
                 }
-                aircraft.append(
-                    Aircraft(**cleaned_data)
-                )
-            except TypeError:
-                pass
+            except (TypeError, ValueError):
+                # TODO: Handle
+                continue
+
+            aircraft.append(
+                Aircraft(**cleaned_data)
+            )
 
         return aircraft

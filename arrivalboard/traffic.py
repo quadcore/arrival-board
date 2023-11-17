@@ -40,8 +40,8 @@ class Traffic:
 
         # TODO: Optimize this code
         for aircraft in aircraft:
-            # TODO: Base this on field elevation
-            if aircraft.baro_alt_ft < 670 or aircraft.baro_alt_ft > 5000:
+            if aircraft.baro_alt_ft in range(airport.elevation - 50, airport.elevation + 50) \
+                    or aircraft.baro_alt_ft > airport.elevation + 5000:
                 continue
 
             for runway in airport.runways.values():
