@@ -1,4 +1,4 @@
-from arrivalboard.aircraft.data import OpenSkyApi
+from arrivalboard.aircraft.data import AdsbFi
 from arrivalboard.airport.data import AirportTomlReader
 from arrivalboard.config import APP_CONFIG
 from arrivalboard.config import init_config
@@ -14,7 +14,7 @@ def run():
     airport_source = AirportTomlReader()
     airport = airport_source.get_airports()["KORD"]
 
-    traffic = Traffic(adsb_source=OpenSkyApi())
+    traffic = Traffic(adsb_source=AdsbFi())
     sorter = proximity_sorter(airport)
 
     aircraft = traffic.resolve_by_runway(airport=airport, sorter_func=sorter)

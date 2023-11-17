@@ -1,6 +1,9 @@
 from abc import ABC
 from abc import abstractmethod
+import sys
+from urllib.parse import urljoin
 
+import requests
 from requests import Request
 from requests import Session
 from requests.auth import HTTPBasicAuth
@@ -18,6 +21,57 @@ class ADSBSource(ABC):
     @abstractmethod
     def get_aircraft(self, airport: Airport) -> list[Aircraft]:
         pass
+
+
+class AdsbFi(ADSBSource):
+
+    def __init__(self):
+        adsbfi_config = APP_CONFIG["datasources"]["adsb"]["adsbfi"]
+        self.base_url: str = adsbfi_config["base_url"]
+
+    def get_aircraft(self, airport: Airport) -> list[Aircraft]:
+        url = urljoin(self.base_url, f"v2/lat/{airport.lat}/lon/{airport.lon}/dist/30")
+
+        resp = requests.get(url)
+
+        if resp.status_code != 200:
+            sys.exit(f"adsb.fi error: {resp.status_code}")
+
+        json_dict = resp.json()
+
+        return self._parse_aircraft(json_dict["aircraft"])
+
+    def _parse_aircraft(self, objects: list[object]) -> list[Aircraft]:
+        def get_or_default(object):
+            def inner(attr, default="N/A"):
+                return object.get(attr, default)
+            return inner
+
+        aircraft = []
+
+        for o in objects:
+            get = get_or_default(o)
+
+            baro_alt_ft = get("alt_baro", 0)
+            if (baro_alt_ft == "ground"):
+                # TODO: Set to airport elevation
+                baro_alt_ft = 0
+
+            cleaned_data = {
+                "callsign": get("flight"),
+                "type": get("desc"),
+                "baro_alt_ft": baro_alt_ft,
+                "vert_rate_ftm": get("baro_rate", 0),
+                "ground_speed": get("gs", 0),
+                "track": get("track", 0),
+                "lat": get("lat", 0),
+                "lon": get("lon", 0),
+            }
+            aircraft.append(
+                Aircraft(**cleaned_data)
+            )
+
+        return aircraft
 
 
 class OpenSkyApi(ADSBSource):
@@ -44,7 +98,7 @@ class OpenSkyApi(ADSBSource):
         # specified size with its center being the airport's WGS84 coordinates.
         box: BoundingBox = get_bounding_square_from_point(Coordinate(airport.lat, airport.lon), 30)
 
-        url = self.base_url + "/states/all"
+        url = urljoin(self.base_url, "states/all")
         params = {
             "lamin": min(box.coord_a.lat, box.coord_b.lat),
             "lomin": min(box.coord_a.lon, box.coord_b.lon),
@@ -57,6 +111,10 @@ class OpenSkyApi(ADSBSource):
             req.auth = HTTPBasicAuth(self.username, self.password)
 
         resp = self.session.send(req.prepare())
+
+        if resp.status_code != 200:
+            sys.exit(f"OpenSky error: {resp.status_code}")
+
         json_dict = resp.json()
 
         return self._parse_state_vectors(json_dict["states"])
