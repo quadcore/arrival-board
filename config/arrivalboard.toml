@@ -1,5 +1,8 @@
+[datasources.adsb.adsbfi]
+base_url = "https://opendata.adsb.fi/api/"
+
 [datasources.adsb.opensky]
-base_url = "https://opensky-network.org/api"
+base_url = "https://opensky-network.org/api/"
 auth_file = "./config/opensky_auth.toml"
 
 [datasources.airports.toml]
