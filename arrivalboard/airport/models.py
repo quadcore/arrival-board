@@ -87,4 +87,5 @@ class Airport:
     name: str
     lat: float
     lon: float
+    elevation: int
     runways: dict[str, Runway]
