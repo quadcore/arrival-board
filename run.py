@@ -12,6 +12,7 @@ from arrivalboard.latlon import get_distance_between_points
 
 # Everything here is temporary dev code.
 
+
 def proximity_sorter(coord: Coordinate) -> Callable:
     """Return a function that will sort flights that are passed to it
     based on their distance to the specified coordinate.
