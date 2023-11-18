@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 
-from arrivalboard.aircraft.models import Aircraft
 from arrivalboard.latlon import BoundingBox
 from arrivalboard.latlon import Coordinate
 import arrivalboard.latlon as latlon
 
 
 class Runway:
+
+    from arrivalboard.aircraft.models import Aircraft
 
     def __init__(self,
                  designator: str,
@@ -61,7 +62,7 @@ class Runway:
         return BoundingBox(offset_a, final_b)
 
     def is_aircraft_lined_up(self, aircraft: Aircraft) -> bool:
-        if not aircraft.track - 2 < self.true_heading < aircraft.track + 2:
+        if not aircraft.track - 3 < self.true_heading < aircraft.track + 3:
             return False
 
         coord_a = self.final_bounds.coord_a

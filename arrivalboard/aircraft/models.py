@@ -21,3 +21,14 @@ Ground Speed (kts): {self.ground_speed}
 Track: {self.track}
 Latitude: {self.lat}
 Longitude: {self.lon}\n"""
+
+
+@dataclass
+class Flight:
+
+    from arrivalboard.airport.models import Runway
+
+    aircraft: Aircraft
+    landing_runway: Runway
+    origin: str
+    destination: str
